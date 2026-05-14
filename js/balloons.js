@@ -2,8 +2,9 @@ import cfg from "./config.js";
 
 // Genera los globos y administra su animación y eventos.
 export default class Balloons {
-  constructor(container) {
+  constructor(container, confetti) {
     this.container = container;
+    this.confetti = confetti;
     this.balloons = new Map();
     this.floatPhase = 0;
     this.raf = null;
@@ -28,7 +29,8 @@ export default class Balloons {
       const rect = this.container.getBoundingClientRect();
       const x = Math.random() * (rect.width - cfg.balloonSizes.w);
       const y = Math.random() * (rect.height * 0.6);
-      el.style.transform = `translate(${x}px, ${y}px)`;
+      el.style.transform = `translate(${x}px, ${y}px) translateZ(0)`;
+      el.style.visibility = "";
       this.balloons.set(el, {
         x,
         y,
@@ -42,12 +44,13 @@ export default class Balloons {
 
   startFloat() {
     const loop = () => {
-      this.floatPhase += 0.01;
+      this.floatPhase += 0.09;
       const t = performance.now() / 1000;
       for (const [el, data] of this.balloons.entries()) {
         // animación de flotación usando transform (para performance)
-        const dx = Math.sin(t + data.phase) * 8;
-        const dy = Math.cos(t * 0.9 + data.phase) * 6;
+        const dx = Math.sin(t * 3.6 + data.phase) * 16;
+        const dy = Math.cos(t * 3.0 + data.phase) * 12;
+        el.style.visibility = "";
         el.style.transform = `translate(${data.baseX + dx}px, ${data.baseY + dy}px) translateZ(0)`;
       }
       this.raf = requestAnimationFrame(loop);
@@ -79,6 +82,59 @@ export default class Balloons {
         },
       }),
     );
+    // efecto de explosión y reposicionar el globo
+    this.popEffect(target, rect);
+  }
+
+  popEffect(target, rect) {
+    // usar confetti en canvas si está disponible
+    const cRectMain = this.container.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2 - cRectMain.left;
+    const cy = rect.top + rect.height / 2 - cRectMain.top;
+    const count = 18;
+    if (this.confetti && typeof this.confetti.spawn === "function") {
+      this.confetti.spawn(cx, cy, count);
+    }
+
+    // reposicionar el globo a una nueva ubicación aleatoria
+    const data = this.balloons.get(target);
+    if (data) {
+      const newX = Math.random() * (cRectMain.width - cfg.balloonSizes.w);
+      const newY = Math.random() * (cRectMain.height * 0.6);
+
+      // animar salida (fade/scale), luego actualizar base y animar entrada
+      const initialTransform =
+        target.style.transform || `translate(${data.baseX}px, ${data.baseY}px)`;
+      const outAnim = target.animate(
+        [
+          { transform: initialTransform, opacity: 1 },
+          { transform: initialTransform + " scale(0.5)", opacity: 0 },
+        ],
+        { duration: 220, easing: "cubic-bezier(.2,.8,.2,1)" },
+      );
+
+      outAnim.onfinish = () => {
+        // actualizar base para la animación de flotación
+        data.baseX = newX;
+        data.baseY = newY;
+        // forzar transform a la nueva base (el loop lo ajustará con dx/dy)
+        target.style.transform = `translate(${newX}px, ${newY}px) translateZ(0)`;
+        // animar entrada suave
+        target.animate(
+          [
+            {
+              transform: `translate(${newX}px, ${newY}px) scale(0.6)`,
+              opacity: 0,
+            },
+            {
+              transform: `translate(${newX}px, ${newY}px) scale(1)`,
+              opacity: 1,
+            },
+          ],
+          { duration: 420, easing: "cubic-bezier(.2,.8,.2,1)" },
+        );
+      };
+    }
   }
 
   onPointerMove(e) {

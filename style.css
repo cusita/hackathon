@@ -104,6 +104,26 @@ body{
   filter: grayscale(10%);
 }
 
+/* partículas de explosión al pinchar el globo */
+.pop-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff8, currentColor 40%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+  animation: popMove 520ms forwards ease-out;
+  color: hsl(calc(360 * var(--i, 0.5)), 80%, 55%);
+}
+
+@keyframes popMove {
+  0% { opacity: 1; transform: translate(-50%, -50%) translate(0,0) scale(1); }
+  60% { opacity: 1; transform: translate(-50%, -50%) translate(var(--dist), 0) scale(1.08); }
+  100% { opacity: 0; transform: translate(-50%, -50%) translate(calc(var(--dist) * 1.2), -8px) scale(0.8); }
+}
+
 .b2{background:linear-gradient(180deg,#8be78b,#2ecc71)}
 .b3{background:linear-gradient(180deg,#86a8e7,#7f7fd5)}
 .b4{background:linear-gradient(180deg,#f6a6ff,#e76bff)}
