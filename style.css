@@ -181,6 +181,40 @@ body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, '
   width: 90%;
   text-align: center;
 }
+
+/* Fondo decorativo para pantalla de confirmación */
+.confirm-screen{position:relative;overflow:hidden}
+.confirm-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+.confirm-card{position:relative;z-index:2}
+.decor-balloon{position:absolute;border-radius:48px 48px 40% 40%;display:block;box-shadow:0 12px 28px rgba(10,20,40,0.18);transform-origin:center bottom;opacity:0.95}
+.decor-balloon::after{content:'';position:absolute;left:50%;bottom:-18px;width:2px;height:18px;background:rgba(0,0,0,0.06);transform:translateX(-50%)}
+.decor-balloon{animation:decorFloat 8s ease-in-out infinite}
+
+@keyframes decorFloat{
+  0%{ transform: translateY(0) translateZ(0) }
+  50%{ transform: translateY(-18px) translateZ(0) }
+  100%{ transform: translateY(0) translateZ(0) }
+}
+
+.confetti-decor{position:absolute;inset:0;pointer-events:none}
+.confetti-decor .c{position:absolute;top:10%;width:10px;height:14px;border-radius:3px;opacity:0.95;transform:rotate(20deg);animation:confettiFall 6s linear infinite;}
+.confetti-decor .c{animation-delay: var(--d, 0s)}
+.confetti-decor .c:nth-child(1){background:#ffd166}
+.confetti-decor .c:nth-child(2){background:#ff7ab6}
+.confetti-decor .c:nth-child(3){background:#86a8e7}
+.confetti-decor .c:nth-child(4){background:#66d9ff}
+.confetti-decor .c:nth-child(5){background:#a0e7ff}
+.confetti-decor .c:nth-child(6){background:#c7f9cc}
+.confetti-decor .c:nth-child(7){background:#ffd86b}
+.confetti-decor .c:nth-child(8){background:#f6a6ff}
+.confetti-decor .c:nth-child(9){background:#fdd3a2}
+.confetti-decor .c:nth-child(10){background:#c3b1ff}
+
+@keyframes confettiFall{
+  0%{ transform: translateY(-8vh) rotate(0deg); opacity:0 }
+  10%{ opacity:1 }
+  100%{ transform: translateY(110vh) rotate(360deg); opacity:0.9 }
+}
 .confirm-card h1 { margin: 0 0 8px 0; }
 .confirm-card .details { margin: 16px 0; text-align: left; }
 .confirm-card .details div { margin: 8px 0; }
