@@ -49,6 +49,61 @@ body{
 /* Balloon themes */
 .b0{background:linear-gradient(180deg,#ff7ab6,#ff4d8a)}
 .b1{background:linear-gradient(180deg,#ffd86b,#ffb347)}
+.confirm-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg, #f6f8fa);
+}
+.confirm-card {
+  background: white;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+}
+.confirm-card h1 { margin: 0 0 8px 0; }
+.confirm-card .details { margin: 16px 0; text-align: left; }
+.confirm-card .details div { margin: 8px 0; }
+.confirm-card .actions { margin-top: 18px; }
+
+/* Botón primario */
+.btn.primary {
+  background: var(--accent, #2b8aef);
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+/* Mensaje de error en controles */
+.confirm-error {
+  display: none;
+  color: var(--danger, #b00020);
+  margin-left: 8px;
+  font-size: 14px;
+  align-self: center;
+}
+.confirm-error.visible {
+  display: block;
+  animation: fadeIn 220ms ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo visual para botón deshabilitado */
+.btn[disabled], .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(10%);
+}
+
 .b2{background:linear-gradient(180deg,#8be78b,#2ecc71)}
 .b3{background:linear-gradient(180deg,#86a8e7,#7f7fd5)}
 .b4{background:linear-gradient(180deg,#f6a6ff,#e76bff)}
