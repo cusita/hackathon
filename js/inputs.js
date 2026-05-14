@@ -28,6 +28,10 @@ export default class Inputs {
     if (!this.fields[name]) return;
     this.active = name;
     this.updateActive();
+    // emitir evento global para que otras partes (ej. globos) respondan
+    document.dispatchEvent(
+      new CustomEvent("inputs:active", { detail: { active: name } }),
+    );
   }
 
   updateActive() {

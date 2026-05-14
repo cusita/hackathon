@@ -14,7 +14,11 @@ export default class Game {
 
     this.inputs = new Inputs();
     this.confetti = Confetti(this.confettiCanvas);
-    this.balloons = new Balloons(this.balloonContainer, this.confetti);
+    this.balloons = new Balloons(
+      this.balloonContainer,
+      this.confetti,
+      this.inputs,
+    );
     this.score = 0;
 
     this.setupEvents();

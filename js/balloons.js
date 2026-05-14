@@ -2,9 +2,10 @@ import cfg from "./config.js";
 
 // Genera los globos y administra su animación y eventos.
 export default class Balloons {
-  constructor(container, confetti) {
+  constructor(container, confetti, inputs) {
     this.container = container;
     this.confetti = confetti;
+    this.inputs = inputs;
     this.balloons = new Map();
     this.floatPhase = 0;
     this.raf = null;
@@ -13,17 +14,32 @@ export default class Balloons {
     this.container.addEventListener("pointermove", (e) =>
       this.onPointerMove(e),
     );
+    // escuchar cambios de campo activo para cambiar a monedas
+    document.addEventListener("inputs:active", (e) => {
+      const active = e && e.detail && e.detail.active;
+      this.updateVisualMode(active);
+    });
+    // aplicar modo inicial según inputs
+    if (this.inputs && this.inputs.active)
+      this.updateVisualMode(this.inputs.active);
   }
 
   createBalloons() {
     // Crear 10 globos 0..9
     for (let i = 0; i < cfg.balloonCount; i++) {
       const el = document.createElement("div");
-      el.className = `balloon b${i % 10}`;
+      const mode =
+        this.inputs && this.inputs.active === "transfer" ? "coin" : "balloon";
+      // no aplicar la clase de tema a las monedas para evitar que hereden colores
+      el.className = mode === "coin" ? "coin" : `balloon b${i % 10}`;
+      el.dataset.theme = mode === "coin" ? "" : `b${i % 10}`;
       el.dataset.value = String(i % 10);
       el.style.width = cfg.balloonSizes.w + "px";
       el.style.height = cfg.balloonSizes.h + "px";
-      el.innerHTML = `<span>${i % 10}</span><div class="string"></div>`;
+      el.innerHTML =
+        mode === "balloon"
+          ? `<span>${i % 10}</span><div class="string"></div>`
+          : `<span>${i % 10}</span>`;
       this.container.appendChild(el);
       // posición inicial aleatoria dentro del contenedor
       const rect = this.container.getBoundingClientRect();
@@ -59,7 +75,7 @@ export default class Balloons {
   }
 
   onClick(e) {
-    const target = e.target.closest(".balloon");
+    const target = e.target.closest(".balloon, .coin");
     if (!target) return;
     // rebote visual
     target.animate(
@@ -84,6 +100,24 @@ export default class Balloons {
     );
     // efecto de explosión y reposicionar el globo
     this.popEffect(target, rect);
+  }
+
+  updateVisualMode(active) {
+    const mode = active === "transfer" ? "coin" : "balloon";
+    for (const el of this.balloons.keys()) {
+      const theme = mode === "coin" ? "" : el.dataset.theme || "b0";
+      const value = el.dataset.value || "0";
+      el.className = mode === "coin" ? "coin" : `${mode} ${theme}`;
+      if (mode === "coin") {
+        el.style.width = "56px";
+        el.style.height = "56px";
+        el.innerHTML = `<span>${value}</span>`;
+      } else {
+        el.style.width = cfg.balloonSizes.w + "px";
+        el.style.height = cfg.balloonSizes.h + "px";
+        el.innerHTML = `<span>${value}</span><div class="string"></div>`;
+      }
+    }
   }
 
   popEffect(target, rect) {

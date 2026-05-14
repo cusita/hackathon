@@ -1,9 +1,13 @@
 import Game from "./game.js";
+import initParticles from "./particles.js";
 
 // Punto de entrada principal
 document.addEventListener("DOMContentLoaded", () => {
   // Inicializar juego
   const game = new Game();
+  // inicializar partículas decorativas en el área de juego
+  const gameArea = document.getElementById("gameArea");
+  initParticles(gameArea, 18);
   // Exponer para debug en desarrollo
   window.__BalloonGame = game;
 
