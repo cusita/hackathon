@@ -56,6 +56,14 @@ export default class Inputs {
     if (!/^[0-9]$/.test(d)) return false;
     el.textContent = el.textContent + d;
     animateAdd(el);
+    // si el campo de cuenta alcanza el umbral (10), pasar automáticamente a transfer
+    if (
+      this.active === "account" &&
+      typeof cfg.confettiThreshold?.account === "number" &&
+      el.textContent.length >= cfg.confettiThreshold.account
+    ) {
+      this.setActive("transfer");
+    }
     return true;
   }
 
