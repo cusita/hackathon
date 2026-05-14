@@ -54,7 +54,53 @@ export default class Game {
         e.preventDefault();
         this.toggleActive();
       }
+      // disparar con Escape (Esc) o con la barra espaciadora (Space)
+      if (e.key === "Escape" || e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        this.shoot();
+      }
     });
+
+    // botón de disparo visual
+    const fireBtn = document.getElementById("fireBtn");
+    if (fireBtn) {
+      fireBtn.addEventListener("click", () => this.shoot());
+    }
+  }
+
+  shoot() {
+    const rect = this.balloonContainer.getBoundingClientRect();
+    const aim = this._aimPos || { x: rect.width / 2, y: rect.height / 2 };
+    const globalX = rect.left + aim.x;
+    const globalY = rect.top + aim.y;
+
+    let el = document.elementFromPoint(globalX, globalY);
+    if (el) el = el.closest('.balloon, .coin');
+    if (el) {
+      const r = el.getBoundingClientRect();
+      const detail = { value: el.dataset.value, x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      this.balloonContainer.dispatchEvent(new CustomEvent('balloon:hit', { detail }));
+      // pequeña animación de retroceso del botón
+      const fireBtn = document.getElementById('fireBtn');
+      if (fireBtn) {
+        fireBtn.animate([
+          { transform: 'scale(1)' },
+          { transform: 'scale(0.92)' },
+          { transform: 'scale(1)' }
+        ], { duration: 180, easing: 'ease-out' });
+      }
+    } else {
+      this.flashArc();
+    }
+  }
+
+  flashArc() {
+    if (!this.arc) return;
+    this.arc.animate([
+      { boxShadow: '0 0 0 0 rgba(37,99,235,0.18)' },
+      { boxShadow: '0 0 0 10px rgba(37,99,235,0.06)' },
+      { boxShadow: '0 0 0 0 rgba(37,99,235,0)' }
+    ], { duration: 420, easing: 'ease-out' });
   }
 
   updateAim(pos) {
