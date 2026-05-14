@@ -1,0 +1,8 @@
+{
+  "editor.inlineSuggest.enabled": true,
+  "github.copilot.enable": {"*": true},
+  "editor.suggest.preview": true,
+  "editor.quickSuggestions": {"strings": true},
+  "editor.tabCompletion": "on",
+  "editor.formatOnSave": true
+}

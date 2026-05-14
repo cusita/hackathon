@@ -1,0 +1,21 @@
+# Reglas del proyecto
+
+- Usar JavaScript Vanilla únicamente.
+- No usar librerías externas.
+- Mantener arquitectura modular.
+- Priorizar rendimiento y animaciones fluidas.
+- Utilizar nombres descriptivos.
+- Aplicar principios SOLID cuando sea posible.
+- Evitar funciones gigantes.
+- Máximo 1 responsabilidad por módulo.
+- Usar requestAnimationFrame para animaciones.
+- Usar CSS variables.
+- Mantener diseño responsive.
+- No duplicar lógica.
+- Preferir composición sobre código repetido.
+- Comentar únicamente lógica compleja.
+- Mantener separación entre lógica, UI y efectos.
+- Todas las configuraciones deben centralizarse.
+- Código listo para producción.
+- Evitar código experimental.
+- Mantener compatibilidad moderna con Chrome y Edge.

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Balloon PIN Game — Ingreso Numérico Gamificado</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app" class="app">
+    <header class="header">
+      <h1 class="title">Balloon Input — Juego Numérico</h1>
+      <div class="score" aria-live="polite">Puntos: <span id="score">0</span></div>
+    </header>
+
+    <section class="play-area">
+      <div id="bg-anim" class="bg-anim"></div>
+
+      <div class="inputs-panel glass">
+        <label class="field" data-field="account" tabindex="0">
+          <div class="label">Número de cuenta</div>
+          <div class="value" id="accountField" aria-label="Número de cuenta" role="textbox" aria-readonly="true"></div>
+        </label>
+
+        <label class="field" data-field="transfer" tabindex="0">
+          <div class="label">Valor de transferencia</div>
+          <div class="value" id="transferField" aria-label="Valor de transferencia" role="textbox" aria-readonly="true"></div>
+        </label>
+
+        <div class="controls">
+          <button id="backBtn" class="btn">Borrar último</button>
+          <button id="clearBtn" class="btn">Limpiar</button>
+        </div>
+      </div>
+
+      <div id="gameArea" class="game-area" aria-label="Área de globos" tabindex="0">
+        <canvas id="confettiCanvas" class="confetti"></canvas>
+        <div id="balloonContainer" class="balloon-container" aria-hidden="false"></div>
+
+        <div class="arc-area">
+          <div id="arc" class="arc" aria-hidden="true">
+            <div id="arrow" class="arrow" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer glass">
+      <small>Diseño: mini-game educativo — Compatible táctil y teclado</small>
+    </footer>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

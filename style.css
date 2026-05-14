@@ -1,0 +1,66 @@
+:root{
+  --bg1:#89f7fe;
+  --bg2:#66a6ff;
+  --glass-bg: rgba(255,255,255,0.08);
+  --glass-border: rgba(255,255,255,0.12);
+  --accent:#ff7ab6;
+  --accent-2:#ffd86b;
+  --shadow: 0 6px 18px rgba(10,10,30,0.2);
+  --radius:14px;
+  --text:#0b1220;
+}
+*{box-sizing:border-box}
+html,body,#app{height:100%}
+body{
+  margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  color:var(--text);background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; overflow:hidden;
+}
+.app{display:flex;flex-direction:column;height:100vh;padding:18px;gap:16px}
+.header{display:flex;justify-content:space-between;align-items:center}
+.title{margin:0;font-size:1.2rem;color:#042033}
+.score{font-weight:600}
+.play-area{flex:1;display:flex;gap:18px;align-items:stretch}
+.inputs-panel{width:320px;min-width:240px;padding:16px;border-radius:12px;backdrop-filter:blur(6px);border:1px solid var(--glass-border);box-shadow:var(--shadow)}
+.glass{background:var(--glass-bg)}
+.field{display:block;margin-bottom:12px;cursor:pointer;outline:none}
+.field:focus{box-shadow:0 0 0 3px rgba(255,122,184,0.12);border-radius:10px}
+.label{font-size:0.85rem;color:#063046;margin-bottom:6px}
+.value{min-height:44px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.03);display:flex;align-items:center;font-weight:600;font-size:1.1rem}
+.controls{display:flex;gap:8px;margin-top:8px}
+.btn{flex:1;padding:8px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;font-weight:600;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+
+.game-area{flex:1;position:relative;border-radius:12px;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding-bottom:40px}
+.bg-anim{position:absolute;inset:0;background:radial-gradient(circle at 20% 10%, rgba(255,255,255,0.06), transparent 10%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 40%)}
+.balloon-container{position:relative;flex:1;height:100%;pointer-events:auto}
+.balloon{
+  position:absolute;width:72px;height:96px;border-radius:48px 48px 40% 40%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:1.2rem;box-shadow:0 10px 20px rgba(10,20,40,0.2);cursor:pointer;user-select:none;transform-origin:center bottom;transition:transform 160ms ease, filter 120ms ease}
+.balloon:hover{filter:brightness(1.08)}
+.balloon .string{position:absolute;bottom:-20px;left:50%;width:2px;height:20px;background:rgba(0,0,0,0.06);transform:translateX(-50%)}
+
+.arc-area{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;width:260px;height:120px;display:flex;align-items:flex-end;justify-content:center}
+.arc{width:200px;height:80px;border-bottom-left-radius:200px;border-bottom-right-radius:200px;border:6px solid rgba(255,255,255,0.12);position:relative;display:flex;align-items:center;justify-content:center}
+.arrow{width:56px;height:6px;background:linear-gradient(90deg,#fff 0%, rgba(255,255,255,0.6) 100%);position:absolute;left:50%;transform-origin:left center;transform:translateX(-50%) rotate(0deg);border-radius:6px}
+
+.confetti{position:absolute;inset:0;pointer-events:none}
+.footer{padding:8px;border-radius:10px;text-align:center}
+
+/* Balloon themes */
+.b0{background:linear-gradient(180deg,#ff7ab6,#ff4d8a)}
+.b1{background:linear-gradient(180deg,#ffd86b,#ffb347)}
+.b2{background:linear-gradient(180deg,#8be78b,#2ecc71)}
+.b3{background:linear-gradient(180deg,#86a8e7,#7f7fd5)}
+.b4{background:linear-gradient(180deg,#f6a6ff,#e76bff)}
+.b5{background:linear-gradient(180deg,#a0e7ff,#66d9ff)}
+.b6{background:linear-gradient(180deg,#ffd1dc,#ffb3c6)}
+.b7{background:linear-gradient(180deg,#c7f9cc,#f6f9b5)}
+.b8{background:linear-gradient(180deg,#fdd3a2,#fda085)}
+.b9{background:linear-gradient(180deg,#c3b1ff,#9fa8ff)}
+
+@media (max-width:900px){
+  .play-area{flex-direction:column}
+  .inputs-panel{width:100%;display:flex;flex-direction:row;gap:8px;align-items:center}
+  .field{flex:1}
+  .arc-area{width:100%;transform:none}
+}
