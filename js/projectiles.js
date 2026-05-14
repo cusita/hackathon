@@ -20,7 +20,8 @@ export function spawnProjectile(
   const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
 
   const el = document.createElement("div");
-  el.className = "projectile";
+  // permitir clase extra para variantes (eg. 'bullet')
+  el.className = "projectile" + (opts.className ? ` ${opts.className}` : "");
   el.style.left = sx + "px";
   el.style.top = sy + "px";
   el.style.transform = `translate(-6px, -3px) rotate(${angle}deg)`;

@@ -1,4 +1,5 @@
 import cfg from "./config.js";
+import { spawnProjectile } from "./projectiles.js";
 
 // Genera los globos y administra su animación y eventos.
 export default class Balloons {
@@ -13,6 +14,7 @@ export default class Balloons {
     this.speedFactor = 2.8; // multiplicador de velocidad aumentado (ajustable)
     this.createBalloons();
     this.container.addEventListener("click", (e) => this.onClick(e));
+    this.arc = document.getElementById("arc");
     this.container.addEventListener("pointermove", (e) =>
       this.onPointerMove(e),
     );
@@ -117,18 +119,27 @@ export default class Balloons {
     );
     const value = target.dataset.value;
     const rect = target.getBoundingClientRect();
-    // emitir evento personalizado para hit
-    this.container.dispatchEvent(
-      new CustomEvent("balloon:hit", {
-        detail: {
-          value,
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2,
-        },
-      }),
-    );
-    // efecto de explosión y reposicionar el globo
-    this.popEffect(target, rect);
+    // disparar una "bala negra" visual desde la fila/arco hacia el globo
+    const startRect = this.arc
+      ? this.arc.getBoundingClientRect()
+      : this.container.getBoundingClientRect();
+    const startX = (startRect.left + startRect.right) / 2;
+    const startY =
+      startRect.top + (this.arc ? startRect.height / 2 : startRect.height - 10);
+    const targetX = rect.left + rect.width / 2;
+    const targetY = rect.top + rect.height / 2;
+
+    spawnProjectile(this.container, startX, startY, targetX, targetY, {
+      className: "bullet",
+    }).then(() => {
+      // al llegar, emitir evento de hit y aplicar efecto
+      this.container.dispatchEvent(
+        new CustomEvent("balloon:hit", {
+          detail: { value, x: targetX, y: targetY },
+        }),
+      );
+      this.popEffect(target, rect);
+    });
   }
 
   updateVisualMode(active) {
