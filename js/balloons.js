@@ -9,6 +9,8 @@ export default class Balloons {
     this.balloons = new Map();
     this.floatPhase = 0;
     this.raf = null;
+    this._lastFrame = 0;
+    this.speedFactor = 2.8; // multiplicador de velocidad aumentado (ajustable)
     this.createBalloons();
     this.container.addEventListener("click", (e) => this.onClick(e));
     this.container.addEventListener("pointermove", (e) =>
@@ -41,17 +43,22 @@ export default class Balloons {
           ? `<span>${i % 10}</span><div class="string"></div>`
           : `<span>${i % 10}</span>`;
       this.container.appendChild(el);
-      // posición inicial aleatoria dentro del contenedor
+      // posición inicial aleatoria dentro del contenedor (todo el área)
       const rect = this.container.getBoundingClientRect();
-      const x = Math.random() * (rect.width - cfg.balloonSizes.w);
-      const y = Math.random() * (rect.height * 0.6);
+      const w = parseFloat(el.style.width) || cfg.balloonSizes.w;
+      const h = parseFloat(el.style.height) || cfg.balloonSizes.h;
+      const x = Math.random() * Math.max(1, rect.width - w);
+      const y = Math.random() * Math.max(1, rect.height - h);
       el.style.transform = `translate(${x}px, ${y}px) translateZ(0)`;
       el.style.visibility = "";
+      // velocidad aleatoria para movimiento libre
+      const vx = (Math.random() - 0.5) * 80 * this.speedFactor; // px/s
+      const vy = (Math.random() - 0.5) * 60 * this.speedFactor; // px/s
       this.balloons.set(el, {
         x,
         y,
-        baseX: x,
-        baseY: y,
+        vx,
+        vy,
         phase: Math.random() * Math.PI * 2,
       });
     }
@@ -59,16 +66,38 @@ export default class Balloons {
   }
 
   startFloat() {
-    const loop = () => {
-      this.floatPhase += 0.09;
+    const loop = (now) => {
+      if (!this._lastFrame) this._lastFrame = now;
+      const dt = Math.min(0.05, (now - this._lastFrame) / 1000); // segundos (cap dt)
+      this._lastFrame = now;
+      this.floatPhase += dt * 6.0;
       const t = performance.now() / 1000;
+      const rect = this.container.getBoundingClientRect();
+
       for (const [el, data] of this.balloons.entries()) {
-        // animación de flotación usando transform (para performance)
-        const dx = Math.sin(t * 3.6 + data.phase) * 16;
-        const dy = Math.cos(t * 3.0 + data.phase) * 12;
+        // update positions
+        data.x += data.vx * dt;
+        data.y += data.vy * dt;
+
+        // añadir pequeño sway para globos (solo estética)
+        const sway = Math.sin(t * 2 + data.phase) * 10;
+        const sx = data.x + sway;
+        const sy = data.y + Math.cos(t * 1.5 + data.phase) * 6;
+
         el.style.visibility = "";
-        el.style.transform = `translate(${data.baseX + dx}px, ${data.baseY + dy}px) translateZ(0)`;
+        el.style.transform = `translate(${sx}px, ${sy}px) translateZ(0)`;
+
+        // rebote en los bordes del contenedor
+        const elRect = el.getBoundingClientRect();
+        const w = elRect.width;
+        const h = elRect.height;
+
+        if (data.x <= 0 && data.vx < 0) data.vx = -data.vx;
+        if (data.x + w >= rect.width && data.vx > 0) data.vx = -data.vx;
+        if (data.y <= 0 && data.vy < 0) data.vy = -data.vy;
+        if (data.y + h >= rect.height && data.vy > 0) data.vy = -data.vy;
       }
+
       this.raf = requestAnimationFrame(loop);
     };
     if (!this.raf) this.raf = requestAnimationFrame(loop);
@@ -130,15 +159,17 @@ export default class Balloons {
       this.confetti.spawn(cx, cy, count);
     }
 
-    // reposicionar el globo a una nueva ubicación aleatoria
+    // reposicionar el globo a una nueva ubicación aleatoria dentro del área
     const data = this.balloons.get(target);
     if (data) {
-      const newX = Math.random() * (cRectMain.width - cfg.balloonSizes.w);
-      const newY = Math.random() * (cRectMain.height * 0.6);
+      const w = parseFloat(target.style.width) || cfg.balloonSizes.w;
+      const h = parseFloat(target.style.height) || cfg.balloonSizes.h;
+      const newX = Math.random() * Math.max(1, cRectMain.width - w);
+      const newY = Math.random() * Math.max(1, cRectMain.height - h);
 
-      // animar salida (fade/scale), luego actualizar base y animar entrada
+      // animar salida (fade/scale), luego actualizar posición y velocidad y animar entrada
       const initialTransform =
-        target.style.transform || `translate(${data.baseX}px, ${data.baseY}px)`;
+        target.style.transform || `translate(${data.x}px, ${data.y}px)`;
       const outAnim = target.animate(
         [
           { transform: initialTransform, opacity: 1 },
@@ -148,10 +179,11 @@ export default class Balloons {
       );
 
       outAnim.onfinish = () => {
-        // actualizar base para la animación de flotación
-        data.baseX = newX;
-        data.baseY = newY;
-        // forzar transform a la nueva base (el loop lo ajustará con dx/dy)
+        // actualizar coordenadas y asignar nueva velocidad aleatoria
+        data.x = newX;
+        data.y = newY;
+        data.vx = (Math.random() - 0.5) * 80 * this.speedFactor;
+        data.vy = (Math.random() - 0.5) * 60 * this.speedFactor;
         target.style.transform = `translate(${newX}px, ${newY}px) translateZ(0)`;
         // animar entrada suave
         target.animate(
