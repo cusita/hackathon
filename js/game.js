@@ -2,6 +2,7 @@ import cfg from "./config.js";
 import Balloons from "./balloons.js";
 import Inputs from "./inputs.js";
 import { Confetti } from "./effects.js";
+import { spawnProjectile } from "./projectiles.js";
 import * as SND from "./sounds.js";
 
 export default class Game {
@@ -81,6 +82,7 @@ export default class Game {
 
     let el = document.elementFromPoint(globalX, globalY);
     if (el) el = el.closest(".balloon, .coin");
+    const fireBtn = document.getElementById("fireBtn");
     if (el) {
       const r = el.getBoundingClientRect();
       const detail = {
@@ -88,11 +90,23 @@ export default class Game {
         x: r.left + r.width / 2,
         y: r.top + r.height / 2,
       };
-      this.balloonContainer.dispatchEvent(
-        new CustomEvent("balloon:hit", { detail }),
-      );
+      // reproducir sonido de disparo y mostrar proyectil
+      SND.playShoot();
+      const arcRect = this.arc.getBoundingClientRect();
+      const startX = arcRect.left + arcRect.width / 2;
+      const startY = arcRect.top + arcRect.height / 2;
+      spawnProjectile(
+        this.balloonContainer,
+        startX,
+        startY,
+        detail.x,
+        detail.y,
+      ).then(() => {
+        this.balloonContainer.dispatchEvent(
+          new CustomEvent("balloon:hit", { detail }),
+        );
+      });
       // pequeña animación de retroceso del botón
-      const fireBtn = document.getElementById("fireBtn");
       if (fireBtn) {
         fireBtn.animate(
           [
@@ -104,7 +118,18 @@ export default class Game {
         );
       }
     } else {
-      this.flashArc();
+      // si no hay objetivo, se muestra el proyectil hacia la posición del puntero y parpadea el arco
+      const arcRect = this.arc.getBoundingClientRect();
+      const startX = arcRect.left + arcRect.width / 2;
+      const startY = arcRect.top + arcRect.height / 2;
+      SND.playShoot();
+      spawnProjectile(
+        this.balloonContainer,
+        startX,
+        startY,
+        globalX,
+        globalY,
+      ).then(() => this.flashArc());
     }
   }
 
